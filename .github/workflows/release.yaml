@@ -45,7 +45,7 @@ jobs:
           CORE_VERSION=$(./mvnw help:evaluate -D'expression=core.artifact.version' -q -D'forceStdout')
           RC_VERSION=$(./mvnw help:evaluate -D'expression=core.artifact.release' -q -D'forceStdout')
           RC_NUMBER=$(echo "$RC_VERSION" | grep -o -E '[0-9]+')
-          NEW_RC_NUMBER=$((1 + $RC_NUMBER))
+          NEW_RC_NUMBER=$((1 + $RC_NUMBER)) >> $GITHUB_OUTPUT
           echo "DEV_VERSION=$CORE_VERSION-r$NEW_RC_NUMBER-SNAPSHOT" >> $GITHUB_OUTPUT
 
       - name: Shared Release Action
@@ -54,4 +54,11 @@ jobs:
           version_type: 'pre-release'
           github_token: ${{secrets.GITHUB_TOKEN}}
           development_version: ${{steps.newDevVersion.outputs.DEV_VERSION}}
+
+      - name: Update Release Candidate Property
+        run: |
+          mvn versions:set-property \
+            -D'property=core.artifact.release' \
+            -D'newVersion=r${{steps.newDevVersion.outputs.NEW_RC_NUMBER}}
+          
             
