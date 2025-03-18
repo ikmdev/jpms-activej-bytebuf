@@ -60,5 +60,10 @@ jobs:
           mvn versions:set-property \
             -D'property=core.artifact.release' \
             -D'newVersion=r${{steps.newDevVersion.outputs.NEW_RC_NUMBER}}
+             git config user.name "ikmdevops"
+             git config user.email ${{ inputs.ikmdevops_email }}
+             git pull -p
+             git commit -am"Updated Release Candidate to r${{steps.newDevVersion.outputs.NEW_RC_NUMBER}}"
+             git push
           
             
